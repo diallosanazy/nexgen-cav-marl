@@ -155,7 +155,7 @@ nexgen-cav-marl/
 
 ## Authors
 
-- **Alhassana Diallo** — MARL-PPO, MADDPG, MAPPO implementation (Waymax/JAX)
-- **Marcley Colin** — AlphaSim / Alpamayo integration (NVIDIA PhysicalAI)
+- **Alhassana Diallo**
+- **Marcley Colin**
 
 **Advisor:** CSC 59866-E, City College of New York, Spring 2026
