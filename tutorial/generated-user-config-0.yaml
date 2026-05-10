@@ -1,0 +1,54 @@
+artifact_cache_size: 10
+enable_autoresume: false
+endpoints:
+  controller:
+    n_concurrent_rollouts: 4
+    skip: false
+  do_shutdown: true
+  driver:
+    n_concurrent_rollouts: 4
+  physics:
+    n_concurrent_rollouts: 4
+    skip: false
+  sensorsim:
+    n_concurrent_rollouts: 4
+  sensorsim_cache_size: '5'
+  trafficsim:
+    n_concurrent_rollouts: 4
+    skip: true
+extra_cameras:
+  - logical_id: camera_front_wide_120fov
+    rig_to_camera:
+      rotation_xyzw:
+        - -0.49929397355810856
+        - 0.5039939168301356
+        - -0.4972939976976715
+        - 0.49939397235113037
+      translation_m:
+        - 1.65897811
+        - -0.01443456
+        - 1.51539499
+nr_workers: 1
+scenes:
+  - scene_id: clipgt-01d503d4-449b-46fc-8d78-9085e70d3554
+simulation_config:
+  assert_zero_decision_delay: true
+  cameras:
+    - first_frame_offset_us: -30000
+      frame_interval_us: 500000
+      height: 1080
+      logical_id: camera_front_wide_120fov
+      shutter_duration_us: 30000
+      width: 1920
+  control_timestep_us: 500000
+  force_gt_duration_us: 3000000
+  min_traffic_duration_us: 3000000
+  n_rollouts: 1
+  n_sim_steps: 100
+  physics_update_mode: EGO_ONLY
+  planner_delay_us: 0
+  pose_reporting_interval_us: 0
+  route_generator_type: MAP
+  send_recording_ground_truth: false
+  time_start_offset_us: 500000
+startup_timeout_seconds: 600

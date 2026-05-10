@@ -1,0 +1,9 @@
+[project]
+name = "my-marl-project"
+version = "0.1.0"
+description = "MAPPO and MARL experiments on AlpaSim"
+dependencies = [
+"jax[cuda13]",
+"flax",
+"equinox",
+]

@@ -1,0 +1,70 @@
+04:43:49.631 [W0] INFO:	Worker 0 starting (num_workers=1, num_consumers=4)
+04:43:49.665 [W0] INFO:	GPU monitoring initialized: 1 GPU(s) detected
+04:43:49.665 [W0] INFO:	Worker 0 ready with num_consumers=4
+04:43:49.665 [W0] INFO:	Event loop idle profiler installed
+04:43:49.760 [W0] WARNING:	Max error in cubic spline approximation: 1.169333 m for track_id='109'
+04:43:49.769 [W0] WARNING:	Max error in cubic spline approximation: 1.184660 m for track_id='86'
+04:43:49.776 [W0] WARNING:	Max error in cubic spline approximation: 1.249407 m for track_id='113'
+04:43:49.784 [W0] WARNING:	Max error in cubic spline approximation: 1.066923 m for track_id='104'
+04:43:49.790 [W0] WARNING:	Max error in cubic spline approximation: 1.386981 m for track_id='91'
+04:43:49.792 [W0] WARNING:	Max error in cubic spline approximation: 1.030095 m for track_id='171'
+04:43:49.796 [W0] WARNING:	Max error in cubic spline approximation: 1.156010 m for track_id='127'
+04:43:49.798 [W0] WARNING:	Max error in cubic spline approximation: 2.554735 m for track_id='53'
+04:43:49.816 [W0] WARNING:	Max error in cubic spline approximation: 1.438016 m for track_id='137'
+04:43:49.820 [W0] WARNING:	Max error in cubic spline approximation: 1.414250 m for track_id='75'
+04:43:49.837 [W0] WARNING:	Max error in cubic spline approximation: 1.088234 m for track_id='96'
+04:43:49.840 [W0] WARNING:	Max error in cubic spline approximation: 1.728594 m for track_id='59'
+04:43:49.850 [W0] WARNING:	Max error in cubic spline approximation: 1.212023 m for track_id='117'
+04:43:49.860 [W0] WARNING:	Max error in cubic spline approximation: 1.095982 m for track_id='126'
+04:43:49.866 [W0] WARNING:	Max error in cubic spline approximation: 1.075752 m for track_id='186'
+04:43:49.871 [W0] INFO:	Filtering traffic objects with min duration 3000000 us
+04:43:49.871 [W0] INFO:	Number of traffic objects before filtering: 105
+04:43:49.871 [W0] INFO:	Number of traffic objects after filtering: 62
+04:43:49.880 [W0] INFO:	Loading USDZ map data into memory. This will take a few seconds...
+04:43:49.893 [W0] INFO:	Applied XODR ENU to Simulation coordinate transform for trajectory alignment
+04:43:50.267 [W0] INFO:	Successfully loaded map from XODR
+04:43:50.318 [W0] INFO:	Requesting available cameras for scene_id='clipgt-01d503d4-449b-46fc-8d78-9085e70d3554'
+04:44:00.121 [W0] WARNING:	Rollout FAILED: job=7f40d1b6f4264257a81e870b00ecde20 scene=clipgt-01d503d4-449b-46fc-8d78-9085e70d3554 uuid=8663a7f8-3c73-11f1-a6d0-9bff0fec6d39 error=<AioRpcError of RPC that terminated with:
+	status = StatusCode.UNKNOWN
+	details = "Exception calling application: CUDA error: no kernel image is available for execution on the device
+CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
+For debugging consider passing CUDA_LAUNCH_BLOCKING=1
+Compile with `TORCH_USE_CUDA_DSA` to enable device-side assertions.
+"
+	debug_error_string = "UNKNOWN:Error received from peer  {grpc_message:"Exception calling application: CUDA error: no kernel image is available for execution on the device\nCUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.\nFor debugging consider passing CUDA_LAUNCH_BLOCKING=1\nCompile with `TORCH_USE_CUDA_DSA` to enable device-side assertions.\n", grpc_status:2}"
+>
+Traceback (most recent call last):
+  File "/repo/src/runtime/alpasim_runtime/worker/main.py", line 113, in run_single_rollout
+    eval_result = await EventBasedRollout(
+                  ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/repo/src/runtime/alpasim_runtime/event_loop.py", line 401, in run
+    sensorsim_cameras = await self.sensorsim.get_available_cameras(
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/repo/src/runtime/alpasim_runtime/services/sensorsim_service.py", line 98, in get_available_cameras
+    response: AvailableCamerasReturn = await profiled_rpc_call(
+                                       ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/repo/src/runtime/alpasim_runtime/telemetry/rpc_wrapper.py", line 124, in profiled_rpc_call
+    result = await fut
+             ^^^^^^^^^
+  File "/repo/.venv/lib/python3.12/site-packages/grpc/aio/_call.py", line 329, in __await__
+    raise _create_rpc_error(
+grpc.aio._call.AioRpcError: <AioRpcError of RPC that terminated with:
+	status = StatusCode.UNKNOWN
+	details = "Exception calling application: CUDA error: no kernel image is available for execution on the device
+CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
+For debugging consider passing CUDA_LAUNCH_BLOCKING=1
+Compile with `TORCH_USE_CUDA_DSA` to enable device-side assertions.
+"
+	debug_error_string = "UNKNOWN:Error received from peer  {grpc_message:"Exception calling application: CUDA error: no kernel image is available for execution on the device\nCUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.\nFor debugging consider passing CUDA_LAUNCH_BLOCKING=1\nCompile with `TORCH_USE_CUDA_DSA` to enable device-side assertions.\n", grpc_status:2}"
+>
+
+04:44:00.123 [W0] INFO:	Received shutdown signal
+04:44:00.125 [W0] INFO:	Received shutdown signal
+04:44:00.125 [W0] INFO:	Received shutdown signal
+04:44:00.126 [W0] INFO:	Received shutdown signal
+04:44:00.133 [W0] INFO:	Exporting GPU metrics for 1 GPU(s)
+04:44:00.140 [W0] INFO:	Metrics written to /mnt/log_dir/telemetry/metrics_worker_0.prom
+04:44:00.141 [W0] INFO:	Worker 0 exiting
+04:44:00.184 [W0] INFO:	Merged 1 Prometheus files into /mnt/log_dir/telemetry/metrics.prom
+04:44:00.186 [W0] INFO:	Loading metrics from: /mnt/log_dir/telemetry/metrics.prom
+04:44:02.419 [W0] INFO:	Metrics plot saved to: /mnt/log_dir/metrics_plot.png

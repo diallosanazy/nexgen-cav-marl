@@ -1,0 +1,11 @@
+host: 0.0.0.0
+inference:
+  max_batch_size: 8
+  use_cameras:
+    - front_camera
+log_level: INFO
+model:
+  device: cuda
+  model_type: manual
+output_dir: /mnt/output
+port: 6000

@@ -1,0 +1,367 @@
+defaults:
+  - config_schema
+  - _self_
+defines:
+  base_image: alpasim-base:0.57.0
+  driver_model: ???
+  drivers: /home/marc/alpasim/data/drivers
+  filesystem: /home/marc/alpasim/data
+  helper: scripts
+  hf_cache: /home/marc/.cache/huggingface
+  image_registry: ''
+  mpc_implementation: linear
+  nre_cache_size: '5'
+  physics_cache_size: '16'
+  sensordata: /home/marc/alpasim/data/nre-artifacts
+  sensorsim_entrypoint: /app/internal/scripts/pycena/runtime/pycena_run
+  trafficsim_map_cache: /home/marc/alpasim/data/trafficsim/unified_data_cache
+  vscode: sources/remote-vscode-server
+driver:
+  host: 0.0.0.0
+  inference:
+    context_length: 1
+    max_batch_size: 32
+    subsample_factor: 1
+    use_cameras:
+      - camera_front_wide_120fov
+  log_level: INFO
+  model:
+    checkpoint_path: /mnt/drivers/vavam/VAM_width_1024_pretrained_139k.pt
+    device: cuda
+    model_type: vam
+    tokenizer_path: /mnt/drivers/vavam/VQ_ds16_16384_llamagen_encoder.jit
+  output_dir: /mnt/output/driver
+  plot_debug_images: false
+  port: ???
+  rectification:
+    camera_front_wide_120fov:
+      focal_length:
+        - 1545.0
+        - 1545.0
+      max_overscan_scale: 2.0
+      principal_point:
+        - 960.0
+        - 560.0
+      radial:
+        - -0.356123
+        - 0.172545
+        - -0.05231
+        - 0.0
+        - 0.0
+        - 0.0
+      resolution_hw:
+        - 1080
+        - 1920
+      safety_margin_px: 10
+      tangential:
+        - -0.00213
+        - 0.000464
+      thin_prism:
+        - 0.0
+        - 0.0
+        - 0.0
+        - 0.0
+  route:
+    command_distance_threshold: 3.0
+    default_command: 2
+    min_lookahead_distance: 20.0
+    use_waypoint_commands: true
+  trajectory_optimizer:
+    enabled: false
+eval:
+  aggregation_modifiers:
+    max_dist_to_gt_trajectory: 4.0
+  enabled: true
+  num_processes: 16
+  scorers:
+    image:
+      camera_logical_id: camera_front_wide_120fov
+    min_ade:
+      incl_z: false
+      target: GT
+      time_deltas:
+        - 0.5
+        - 1.0
+        - 2.5
+        - 5.0
+    plan_deviation:
+      avg_decay_rate: 0.1
+      incl_z: false
+      min_timesteps: 5
+  vec_map:
+    incl_road_edges: true
+    incl_traffic_signs: true
+    incl_wait_lines: true
+    max_num_lanes: 20
+    num_pts_per_lane: 20
+  vehicle:
+    vehicle_corner_roundness: 0.5
+    vehicle_shrink_factor: 0.02
+  video:
+    camera_id_to_render: camera_front_wide_120fov
+    combined_video_speed_factor: 0.33
+    generate_combined_video: false
+    map_video:
+      ego_loc: BOTTOM_CENTER
+      map_elements_to_plot:
+        - ROAD_LANE_CENTER
+        - ROAD_LANE_LEFT_EDGE
+        - ROAD_LANE_RIGHT_EDGE
+        - ROAD_EDGE
+        - STOP_LINE
+        - GT_LINESTRING
+        - EGO_GT_GHOST_POLYGON
+        - DRIVER_RESPONSES
+        - ROUTE
+        - AGENTS
+      map_radius_m: 20
+      rotate_map_to_ego: true
+    metrics_table_entries:
+      - offroad_or_collision_at_fault
+      - collision_any
+      - collision_at_fault
+      - collision_front
+      - collision_lateral
+      - collision_rear
+      - offroad
+      - dist_to_gt_trajectory
+      - dist_to_gt_location
+      - progress
+      - progress_rel
+      - safety_monitor_triggered
+    overlay_plans_on_camera: true
+    reasoning_text_refresh_interval_s: 1.0
+    render_every_nth_frame: 1
+    render_video: true
+    video_layouts:
+      - DEFAULT
+runtime:
+  artifact_cache_size: 10
+  enable_autoresume: false
+  endpoints:
+    controller:
+      n_concurrent_rollouts: 4
+      skip: false
+    do_shutdown: true
+    driver:
+      n_concurrent_rollouts: 4
+    physics:
+      n_concurrent_rollouts: 4
+      skip: false
+    sensorsim:
+      n_concurrent_rollouts: 4
+    sensorsim_cache_size: '5'
+    trafficsim:
+      n_concurrent_rollouts: 4
+      skip: true
+  extra_cameras:
+    - logical_id: camera_front_wide_120fov
+      rig_to_camera:
+        rotation_xyzw:
+          - -0.49929397355810856
+          - 0.5039939168301356
+          - -0.4972939976976715
+          - 0.49939397235113037
+        translation_m:
+          - 1.65897811
+          - -0.01443456
+          - 1.51539499
+  nr_workers: 1
+  simulation_config:
+    assert_zero_decision_delay: true
+    cameras:
+      - first_frame_offset_us: -30000
+        frame_interval_us: 500000
+        height: 1080
+        logical_id: camera_front_wide_120fov
+        shutter_duration_us: 30000
+        width: 1920
+    control_timestep_us: 500000
+    ego_mask_rig_config_id: null
+    force_gt_duration_us: 3000000
+    min_traffic_duration_us: 3000000
+    n_rollouts: 1
+    n_sim_steps: 100
+    physics_update_mode: EGO_ONLY
+    planner_delay_us: 0
+    pose_reporting_interval_us: 0
+    route_generator_type: MAP
+    send_recording_ground_truth: false
+    time_start_offset_us: 500000
+    vehicle: null
+  startup_timeout_seconds: 600
+scenes:
+  limit_to_first_n: 0
+  local_usdz_dir: null
+  nre_version_string: null
+  scene_cache: /home/marc/alpasim/data/nre-artifacts
+  scene_ids:
+    - clipgt-01d503d4-449b-46fc-8d78-9085e70d3554
+  scenes_csv:
+    - /home/marc/alpasim/data/scenes/sim_scenes.csv
+  sceneset_path: scenesets/8dbec8df4f41d0a391e657de75df7974
+  suites_csv:
+    - /home/marc/alpasim/data/scenes/sim_suites.csv
+  test_suite_id: null
+services:
+  controller:
+    command:
+      - uv run python -m alpasim_controller.server
+      - --port={port}
+      - --log_dir=/mnt/output
+      - --log-level=INFO
+      - --mpc-implementation=linear
+    environments: []
+    external_image: false
+    gpus: null
+    image: alpasim-base:0.57.0
+    remap_root: false
+    replicas_per_container: 1
+    volumes:
+      - /home/marc/alpasim/tutorial/controller:/mnt/output
+      - /home/marc/alpasim/src:/repo/src
+      - /home/marc/alpasim/plugins:/repo/plugins
+    workdir: null
+  driver:
+    command:
+      - uv run -m alpasim_driver.main
+      - --config-path=/mnt/output
+      - --config-name=driver-config.yaml
+      - host=0.0.0.0
+      - port={port}
+    environments: []
+    external_image: false
+    gpus:
+      - 0
+    image: alpasim-base:0.57.0
+    remap_root: false
+    replicas_per_container: 1
+    volumes:
+      - /home/marc/alpasim/data/drivers:/mnt/drivers
+      - /home/marc/alpasim/tutorial:/mnt/output
+      - /home/marc/alpasim/src:/repo/src
+      - /home/marc/alpasim/plugins:/repo/plugins
+      - /home/marc/.cache/huggingface:/root/.cache/huggingface
+    workdir: null
+  physics:
+    command:
+      - uv run physics_server
+      - --host=0.0.0.0
+      - --port={port}
+      - --artifact-glob=/mnt/nre-data/{sceneset}/**/*.usdz
+      - --use-ground-mesh=true
+      - --cache-size=16
+      - --log-level=INFO
+    environments:
+      - WARP_CACHE_PATH='/mnt/warp'
+    external_image: false
+    gpus:
+      - 0
+    image: alpasim-base:0.57.0
+    remap_root: false
+    replicas_per_container: 1
+    volumes:
+      - /home/marc/alpasim/data/nre-artifacts:/mnt/nre-data
+      - /home/marc/alpasim/src:/repo/src
+      - /home/marc/alpasim/plugins:/repo/plugins
+    workdir: null
+  runtime:
+    command:
+      - uv run python -m alpasim_runtime.simulate
+      - --usdz-glob=/mnt/nre-data/{sceneset}/**/*.usdz
+      - --user-config=/mnt/log_dir/{runtime_config_name}
+      - --network-config=/mnt/log_dir/generated-network-config.yaml
+      - --log-dir=/mnt/log_dir
+      - --log-level=INFO
+      - --array-job-dir=/mnt/array_job_dir
+      - --eval-config=/mnt/log_dir/eval-config.yaml
+    depends_on:
+      - driver
+      - sensorsim
+      - physics
+      - trafficsim
+      - controller
+    environments: []
+    external_image: false
+    gpus: null
+    image: alpasim-base:0.57.0
+    remap_root: false
+    replicas_per_container: 1
+    volumes:
+      - /home/marc/alpasim/data/nre-artifacts:/mnt/nre-data
+      - /home/marc/alpasim/tutorial:/mnt/log_dir
+      - /home/marc/alpasim/tutorial:/mnt/array_job_dir
+      - /home/marc/alpasim/src:/repo/src
+      - /home/marc/alpasim/plugins:/repo/plugins
+    workdir: null
+  sensorsim:
+    command:
+      - /app/internal/scripts/pycena/runtime/pycena_run
+      - serve-grpc
+      - --port={port}
+      - --host=0.0.0.0
+      - --artifact-glob=/mnt/nre-data/{sceneset}/**/*.usdz
+      - --egocar-hood-dir=/mnt/ego-hoods
+      - --no-enable-nrend
+      - --download-cache-dir /tmp/nre-cache-dir
+      - --cache-size=5
+      - --max-workers=4
+      - --enable-editing-actors
+    environments:
+      - OMP_NUM_THREADS=1
+    external_image: true
+    gpus:
+      - 0
+    image: nvcr.io/nvidia/nre/nre-ga:26.02
+    remap_root: false
+    replicas_per_container: 1
+    volumes:
+      - /home/marc/alpasim/data/nre-artifacts:/mnt/nre-data
+      - /home/marc/alpasim/data/nre-artifacts/ego-hoods:/mnt/ego-hoods
+    workdir: null
+  trafficsim:
+    command:
+      - echo 'not yet included'
+    environments: []
+    external_image: false
+    gpus:
+      - 0
+    image: alpasim-base:0.57.0
+    remap_root: false
+    replicas_per_container: 1
+    volumes: []
+    workdir: null
+trafficsim: {}
+wizard:
+  array_job_dir: null
+  baseport: 6000
+  debug_flags:
+    use_localhost: false
+  description: unspecified
+  driver_code_hash: null
+  driver_code_repo: null
+  dry_run: false
+  external_services: null
+  helper: ???
+  latest_symlink: false
+  log_dir: /home/marc/alpasim/tutorial
+  log_level: INFO
+  nr_retries: 3
+  run_method: DOCKER_COMPOSE
+  run_mode: BATCH
+  run_name: null
+  run_sim_services:
+    - driver
+    - sensorsim
+    - physics
+    - trafficsim
+    - controller
+    - runtime
+  slurm_job_id: 0
+  sqshcaches:
+    - /home/marc/alpasim/data/sqsh
+    - /home/marc/alpasim/data/sqsh/dev
+  submitter: unspecified
+  timeout: 600
+  validate_mount_points: true
+  vscode: ???

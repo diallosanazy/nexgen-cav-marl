@@ -1,0 +1,13 @@
+# @package driver
+host: "0.0.0.0"
+port: 6000
+output_dir: "/mnt/output"
+log_level: "INFO"
+
+model:
+  model_type: "manual"
+  device: "cuda"
+
+inference:
+  use_cameras: ["front_camera"]
+  max_batch_size: 8

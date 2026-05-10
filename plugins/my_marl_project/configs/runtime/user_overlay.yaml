@@ -1,0 +1,39 @@
+# @package runtime
+scenes:
+  - scene_id: "clipgt-01d503d4-449b-46fc-8d78-9085e70d3554"
+    ego_vehicles:
+      # We define a common sensor profile for all agents to save memory
+      # using 'gt_only' tells sensorsim not to wake up the neural renderer
+      agent_0: {spawn_point: [60, 0, 0], profile: "gt_only"}
+      agent_1: {spawn_point: [42, 42, 0], profile: "gt_only"}
+      agent_2: {spawn_point: [0, 60, 0], profile: "gt_only"}
+      agent_3: {spawn_point: [-42, 42, 0], profile: "gt_only"}
+      agent_4: {spawn_point: [-60, 0, 0], profile: "gt_only"}
+      agent_5: {spawn_point: [-42, -42, 0], profile: "gt_only"}
+      agent_6: {spawn_point: [0, -60, 0], profile: "gt_only"}
+      agent_7: {spawn_point: [42, -42, 0], profile: "gt_only"}
+
+simulation_config:
+  n_sim_steps: 100
+  n_rollouts: 1
+  # Disabling NRE explicitly at the config level
+  use_neural_renderer: false 
+  # Requesting bounding boxes and lane occupancy data
+  return_ground_truth: true
+
+nr_workers: 1
+
+# Using the "Shadow Block" method to keep the Wizard and Runtime happy
+endpoints:
+  driver: {skip: true}
+  physics: {skip: true}
+  sensorsim: {skip: true}
+  trafficsim: {skip: true}
+  controller: {skip: true}
+
+custom_endpoints:
+  driver: "alpasim-driver-0-1:6000"
+  physics: "alpasim-physics-0-1:6002"
+  sensorsim: "alpasim-sensorsim-0-1:6001"
+  trafficsim: ""
+  controller: "alpasim-controller-0-1:6003"
