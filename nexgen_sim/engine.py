@@ -1,4 +1,4 @@
-"""Specification 001: static, single-copy, store-and-forward simulation."""
+"""Single-copy store-and-forward DES with timestamped topology updates."""
 
 from collections import Counter
 from dataclasses import dataclass, field
@@ -77,17 +77,26 @@ class Node:
     transmission_time: int = 0
 
 
+@dataclass
+class Transmission:
+    source: str
+    target: str
+    finish_at: int
+    propagation: int
+    broken: bool = False
+
+
 class Simulator:
     """FIFO among eligible messages; directed links; no receiver contention.
 
-    Event priority: expiration, transmission finish, arrival, generation,
-    wake, service. Insertion sequence breaks remaining ties. Policy callbacks
+    Event priority: expiration, topology update, transmission finish, arrival,
+    generation, wake, decision, service. Insertion sequence breaks remaining ties. Policy callbacks
     receive only an immutable local observation. Outcome callbacks are a
     deterministic channel test seam: True delivers, False permanently drops.
     """
 
-    PRIORITY = {"expire": 0, "finish": 1, "arrive": 2,
-                "generate": 3, "wake": 4, "decide": 5, "service": 6}
+    PRIORITY = {"expire": 0, "topology_update": 1, "finish": 2, "arrive": 3,
+                "generate": 4, "wake": 5, "decide": 6, "service": 7}
 
     def __init__(self, nodes, links: dict[tuple[str, str], Link],
                  policy: Callable[[Observation], object], *, wait_delay=5,
@@ -110,6 +119,8 @@ class Simulator:
         self.log = []
         self._sequence = count()
         self._reserved = set()
+        self.transmissions: dict[str, Transmission] = {}
+        self._topology_times = set()
 
     @classmethod
     def from_topology(cls, topology, policy, **kwargs):
@@ -122,6 +133,33 @@ class Simulator:
 
     def _record(self, kind, message=None, **details):
         self.log.append(dict(time=self.time, event=kind, message=message, **details))
+
+    def schedule_topology(self, topology, *, at):
+        """Schedule a static snapshot for the same persistent vehicle cohort."""
+        duration(at, "topology time")
+        if at < self.time or at in self._topology_times:
+            raise ValueError("topology updates require unique, non-past times")
+        if tuple(topology.nodes) != tuple(self.nodes):
+            raise ValueError("node entry/exit is not supported in this integration")
+        self._topology_times.add(at)
+        self._schedule(at, "topology_update", topology)
+
+    def _topology_update(self, topology):
+        previous = set(self.links)
+        current = set(topology.links)
+        self.topology, self.links = topology, topology.links
+        self._record("topology_updated", added=sorted(current - previous),
+                     removed=sorted(previous - current),
+                     positions={n: topology.node_attributes(n).get("position") for n in topology.nodes})
+        for id, transmission in self.transmissions.items():
+            if (self.time < transmission.finish_at and
+                    (transmission.source, transmission.target) not in current and
+                    not transmission.broken):
+                transmission.broken = True
+                self._record("link_broken", id, source=transmission.source, target=transmission.target)
+        # Existing WAIT eligibility and service reservations are not reset.
+        for node in self.nodes:
+            self._schedule(self.time, "service", node)
 
     def generate(self, id, source, destination, *, at=0, deadline=100):
         duration(at, "at")
@@ -279,10 +317,13 @@ class Simulator:
         m.attempts += 1
         self._record("service_started", m.id, source=node, target=action,
                      transmission_at=self.time)
-        self._schedule(self.time + self.links[node, action].transmission,
+        link = self.links[node, action]
+        self.transmissions[m.id] = Transmission(node, action, self.time + link.transmission, link.propagation)
+        self._schedule(self.time + link.transmission,
                        "finish", m.id, node, action)
 
     def _finish(self, id, source, target):
+        transmission = self.transmissions.pop(id)
         self.nodes[source].busy = None
         self.nodes[source].transmitting = False
         self._record("service_finished", id, source=source, target=target)
@@ -290,7 +331,11 @@ class Simulator:
         m = self.messages[id]
         if m.status != Status.PENDING:
             return
-        self._schedule(self.time + self.links[source, target].propagation,
+        if transmission.broken:
+            m.status = Status.DROPPED
+            self._record("dropped", id, source=source, target=target, reason="link_break")
+            return
+        self._schedule(self.time + transmission.propagation,
                        "arrive", id, source, target)
 
     def _arrive(self, id, source, target):

@@ -13,8 +13,11 @@ the V2V routing study.
 - `scripts/prepare_waymo_scenarios.py` creates a scenario eligibility and split
   CSV from local Waymo shards.
 
-The routing simulator and its integration with Waymo mobility are not included in
-this branch.
+The routing simulator lives in `../nexgen_sim`. Its Waymo adapter consumes these
+readers and graph functions on one shared DES clock. See
+[the integration guide](../nexgen_sim/WAYMO_INTEGRATION.md) for real-data runs and
+combined tests. The preparation command below remains specific to training_20s
+shard names; the unified runner accepts an explicit shard path.
 
 ## Setup and tests
 

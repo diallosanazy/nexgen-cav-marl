@@ -1,3 +1,5 @@
+> **Specification 003:** [Unified Waymo–DES integration](WAYMO_INTEGRATION.md) now adds moving vehicles and dynamic links using the same engine. Historical milestone limits below describe their original scope.
+
 # Specification 001: deterministic simulator foundation
 
 Run from the repository root with Python 3.10 or newer (validated on 3.14.4):

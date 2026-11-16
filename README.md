@@ -1,3 +1,5 @@
+> **Current integrated simulator:** see [Waymo–DES integration](nexgen_sim/WAYMO_INTEGRATION.md) for real-data runs, setup and tests. The historical experiment overview below is retained for provenance.
+
 # NexGen CAV Multi-Agent Routing
 
 **CSC 59866-E Senior Project I — City College of New York**  

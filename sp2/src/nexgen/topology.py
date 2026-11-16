@@ -109,7 +109,11 @@ def iter_scenario_topologies(
     communication_radius: float,
     selected_track_ids: Iterable[int] | None = None,
 ) -> Iterable[Graph]:
-    """Yield one graph per motion frame; callers hold each graph for 10 ticks."""
+    """Yield graphs in frame order; use scenario timestamps to schedule updates.
+
+    The DES adapter holds each graph until the next timestamp. No independent
+    fixed-tick mobility clock is implied by this iterator.
+    """
     stable_selection = (
         None if selected_track_ids is None else tuple(selected_track_ids)
     )
