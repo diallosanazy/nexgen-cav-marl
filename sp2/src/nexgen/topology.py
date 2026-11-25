@@ -56,8 +56,9 @@ class Topology:
 class Topology:
     _nodes: dict
     _edges: dict # Adjecency list representation
-    _distances: dict # Keys are strings of the form "node1-node2" 
+    _distances: dict # Keys are sorted device IDs joined by "->"
                      # values are the distances between the nodes    
+    _max_connectivity_range: float 
 
 
     """ add_node
@@ -68,6 +69,8 @@ class Topology:
     or if some other error occurred while adding the node.
     """
     def add_node(self, device_id, position, transmission_loss_prob) -> bool:
+        if "->" in device_id:
+            return False  # Reserved edge key separator
         if device_id in self._nodes:
             return False  # Node already exists
         new_device = Device(device_id, position, transmission_loss_prob)
@@ -104,27 +107,25 @@ class Topology:
     Combining the role of creating an entry of distance for the first time
     or updating a preexisting distance value
     uses a secret l2 aux function to determine the distances based on x-y positioning of devices
+    as well as another secret function distance_key to generate the standardized unique id.
     """
     @staticmethod
     def _l2(d1, d2) -> float:
-        return math.dist(d1, d2)
+        return round(math.dist(d1, d2), 2)
+
+    @staticmethod
+    def _distance_key(node_key1, node_key2) -> str:
+        return "->".join(sorted((node_key1, node_key2)))
 
     def update_distance(self, node_key1, node_key2) -> bool:
         n1 = self._nodes[node_key1]
         n2 = self._nodes[node_key2]
-        uid = n1.get_deviceid() + n2.get_deviceid()
-        ruid = n2.get_deviceid() + n1.get_deviceid()
+        key = self._distance_key(node_key1, node_key2)
 
-        if uid not in self._distances or ruid not in self._distances:
-            self._distances[uid] = self._l2(n1.get_position(), n2.get_position())
-        elif node_key2 not in self.neighbors(node_key1):
-            return False # Not even connected.
-        else:
-            if uid in self._distances:
-                self._distances[uid] = self._l2(n1.get_position(), n2.get_position())
-            elif ruid in self._distances:
-                self._distances[ruid] = self._l2(n1.get_position(), n2.get_position())
+        if key not in self._distances and (node_key2 not in self._edges[node_key1]):
+            return False # no connection
         
+        self._distances[key] = self._l2(n1.get_position, n2.get_position)
         return True
 
 
