@@ -6,6 +6,8 @@ Edges are expected to be set by the user or established based on the distance be
 (This will be obtained from the training data if not set by the user.)
 Key attributes, nodes and edges.
 Nodes themselves will be a data structure holding the node's position and any other relevant information.
+
+Topology should be self handling, by this I mean it should handle its own clean up automatically
 """
 from dataclasses import dataclass
 import math
@@ -33,25 +35,6 @@ class Device:
         return self.transmission_loss_prob
 
 
-"""
-To do:
-class Topology:
-    nodes: dict of Device objects
-    edges: dict of edges (key: device, value: list of connected devices) 
-    distances: dict of distances between devices [Edge] = distance d
-    methods:
-    constructor 
-    add_node
-    add_edge
-    remove_node
-    remove_edge
-    update distance
-    # For when a node falls out of the network or we want to remove a connection between two nodes
-    # ...due to the distance between the nodes being too great or some other reason.
-    # Maybe we can define nodes to have a failure rate and if a node fails it is removed from the network 
-    # and all edges connected to it are also removed.
-
-"""
 @dataclass
 class Topology:
     _nodes: dict
@@ -129,42 +112,70 @@ class Topology:
         return True
 
 
-    def get_node(node_key) -> Device:
-        pass
+    def get_node(self, node_key) -> Device:
+        return self._node[node_key]
 
 
-    def get_edges() -> dict: # This'll return the entire edge dictionary
-        pass
+    def get_edges(self) -> dict: # This'll return the entire edge dictionary
+        return self._edges
 
 
-    def get_distance(node_key1, node_key2) -> float:
-        pass
+    def get_distance(self, node_key1, node_key2) -> float:
+        key = self._distance_key(node_key1, node_key2)
+        if key not in self._distances:
+            return -707 # Flag for no distance found. Magic numbers are BAD.
+                        # If this ever happens. I need to code in a health check.
+
+        return self._distances[key] 
 
 
-    def remove_node(node_key) -> bool:
-        pass
+    #############################################################################################
+    # Tricky because nodes should never be removed from the topology even if theyre out of range#
+    # def remove_node(node_key) -> bool:
+    #     pass
+    #############################################################################################
 
 
-    def remove_edge(node_key1, node_key2) -> bool:
-        pass
+    def remove_edge(self, node_key1, node_key2) -> bool:
+        edges = self._edges
+        if node_key2 not in edges[node_key1] or node_key1 not in edges[node_key2]:
+            return False # Edge not found in one or the other or both
+
+        edges[node_key1].pop(node_key2)
+        edges[node_key2].pop(node_key1)
+        return True
 
     
-    def remove_distance(node_key1, node_key2) -> bool:
-        pass
+    # Since distances arent actually going to need to be removed... comment this out
+    # def remove_distance(self, node_key1, node_key2) -> bool:
+    #     key = self._distance_key(node_key1, node_key2)
+    #     if key not in self._distances:
+    #         return False # No distance found
+
+    #     self._distances.pop(key)
+    #     return True
 
 
     """
     This'll return a list of all the neighbors of a node
     """
-    def neighbors(node_key) -> list: 
-        pass
+    def neighbors(self, node_key) -> list: 
+        if node_key not in self._edges:
+            return [-1] # Kind of a flag for saying there is no node here. Which should never happen.
+
+        return self._edges[node_key]
 
     """
     This'll return True if there is an edge between the two nodes, False otherwise
     """
-    def has_edge(node_key1, node_key2) -> bool: 
-        pass
+    def has_edge(self, node_key1, node_key2) -> bool: 
+        if node_key2 not in self._edges[node_key1]:
+            return False
+        else:
+            return True
 
 
-    def apply_positions(timestamp, positions) -> bool:
+    # Also tricky, relies on us knowing what the shape of the data is, and thus will rely
+    # on our adapter classes to distill the data into a usable data
+    def apply_positions(self, timestamp, positions) -> bool:
         pass
