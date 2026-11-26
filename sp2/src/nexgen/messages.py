@@ -1,9 +1,7 @@
 """
 This module contains the message definitions for the NexGen system.
-It'll be used to send fake and real data along the network.
+It'll be used to wrap fake and real data passed along the network.
 
-With my current understanding it'll be just housing all the tools for managing message lifetimes
-and pointer to the actual data being passed, synthetic or real based on the training data.
 """
 
 """
