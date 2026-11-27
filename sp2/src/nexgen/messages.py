@@ -47,6 +47,4 @@ class MessageHistory:
     # a list of all of the messages ever generated.
     # Depending on how python handles lists I can see this becoming a big issue over time
     # Memory management, a linked list kind of structure would be better for this I'd assume.
-    # default as [] since we know at the time MessageHistory is initialized there will be zero
-    # messages
-    log_buffer: list = []
+    log_buffer: list
