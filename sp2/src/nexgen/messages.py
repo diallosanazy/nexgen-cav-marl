@@ -25,6 +25,7 @@ class Message:
 
 class MessageHistory:
     buffer of "infinite size" to log all of the messages as a string
-    string format will be a timestamp - delivery time (all Xs if not delivered maybe) - Message Type - Message if applicable (if applicable because I cant put entire subset of a video here)    
+    string format will be a 
+    timestamp - delivery time (all Xs if not delivered maybe) - Message Type - Message if applicable (if applicable because I cant put entire subset of a video here)    
 
 """

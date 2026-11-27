@@ -11,7 +11,8 @@ Topology should be self handling, by this I mean it should handle its own clean 
 """
 from dataclasses import dataclass
 import math
-
+# Note for future self, update this again to use try catch blocks for trickier errors
+# Such as in has_edge, we return false which can be a false positive
 
 @dataclass
 class Device:
@@ -76,8 +77,11 @@ class Topology:
             return False 
         elif node_key1 == node_key2:
             return False 
-        elif node_key1 in self._edges and node_key2 in self._edges[node_key1]:
+        elif node_key1 in self._edges[node_key2] or node_key2 in self._edges[node_key1]:
             return False  
+
+        if self._l2(self._nodes[node_key1].get_position, self._nodes[node_key2].get_position) > self._max_connectivity_range:
+            return False
 
         self._edges[node_key1].append(node_key2)
         self._edges[node_key2].append(node_key1) # Reflect that theyre connected neighbors
@@ -94,7 +98,7 @@ class Topology:
     """
     @staticmethod
     def _l2(d1, d2) -> float:
-        return round(math.dist(d1, d2), 2)
+        return math.dist(d1, d2)
 
     @staticmethod
     def _distance_key(node_key1, node_key2) -> str:
@@ -112,14 +116,25 @@ class Topology:
         return True
 
 
+    """
+    Fetches a device from the list of nodes
+    """
     def get_node(self, node_key) -> Device:
-        return self._node[node_key]
+        return self._nodes[node_key]
 
 
+    """
+    Gets the list of all connections.
+    I notice there is a problem, we don't know what devices these connections map to.
+    May never use until the definition of this function changes.
+    """
     def get_edges(self) -> dict: # This'll return the entire edge dictionary
         return self._edges
 
 
+    """
+    Returns the distance between two devices.
+    """
     def get_distance(self, node_key1, node_key2) -> float:
         key = self._distance_key(node_key1, node_key2)
         if key not in self._distances:
@@ -136,13 +151,18 @@ class Topology:
     #############################################################################################
 
 
+    """
+    Removes a connection between two devices.
+    """
     def remove_edge(self, node_key1, node_key2) -> bool:
         edges = self._edges
-        if node_key2 not in edges[node_key1] or node_key1 not in edges[node_key2]:
+        if node_key1 not in edges or node_key2 not in edges:
+            return False
+        elif node_key2 not in edges[node_key1] or node_key1 not in edges[node_key2]:
             return False # Edge not found in one or the other or both
 
-        edges[node_key1].pop(node_key2)
-        edges[node_key2].pop(node_key1)
+        edges[node_key1].remove(node_key2)
+        edges[node_key2].remove(node_key1)
         return True
 
     
@@ -169,6 +189,8 @@ class Topology:
     This'll return True if there is an edge between the two nodes, False otherwise
     """
     def has_edge(self, node_key1, node_key2) -> bool: 
+        if node_key1 not in self._edges or node_key2 not in self._edges:
+            return False
         if node_key2 not in self._edges[node_key1]:
             return False
         else:

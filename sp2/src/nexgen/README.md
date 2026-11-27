@@ -1,0 +1,1 @@
+placeholder readme, the intent is to use this readme to disclose handwritten parts and ai generated parts. and give brief overview of all of the modules used.
