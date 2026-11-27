@@ -62,7 +62,6 @@ class Topology:
         self._edges[device_id] = []
         return True
 
-
     """ add_edge
     Creates an edge between two devices in the network. Takes in two device_ids as arguments.
     returns True if the edge was added successfully,
@@ -88,7 +87,6 @@ class Topology:
         self.update_distance(node_key1, node_key2) # log their distance
         return True
         
-
     """ update_distance
     Creates a unique key using the nodes if it doesn't already exist
     Combining the role of creating an entry of distance for the first time
@@ -115,13 +113,11 @@ class Topology:
         self._distances[key] = self._l2(n1.get_position, n2.get_position)
         return True
 
-
     """
     Fetches a device from the list of nodes
     """
     def get_node(self, node_key) -> Device:
         return self._nodes[node_key]
-
 
     """
     Gets the list of all connections.
@@ -130,7 +126,6 @@ class Topology:
     """
     def get_edges(self) -> dict: # This'll return the entire edge dictionary
         return self._edges
-
 
     """
     Returns the distance between two devices.
@@ -143,13 +138,11 @@ class Topology:
 
         return self._distances[key] 
 
-
     #############################################################################################
     # Tricky because nodes should never be removed from the topology even if theyre out of range#
     # def remove_node(node_key) -> bool:
     #     pass
     #############################################################################################
-
 
     """
     Removes a connection between two devices.
@@ -165,8 +158,7 @@ class Topology:
         edges[node_key2].remove(node_key1)
         return True
 
-    
-    # Since distances arent actually going to need to be removed... comment this out
+        # Since distances arent actually going to need to be removed... comment this out
     # def remove_distance(self, node_key1, node_key2) -> bool:
     #     key = self._distance_key(node_key1, node_key2)
     #     if key not in self._distances:
@@ -174,7 +166,6 @@ class Topology:
 
     #     self._distances.pop(key)
     #     return True
-
 
     """
     This'll return a list of all the neighbors of a node
@@ -195,7 +186,6 @@ class Topology:
             return False
         else:
             return True
-
 
     # Also tricky, relies on us knowing what the shape of the data is, and thus will rely
     # on our adapter classes to distill the data into a usable data

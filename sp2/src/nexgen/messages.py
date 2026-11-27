@@ -1,31 +1,52 @@
 """
 This module contains the message definitions for the NexGen system.
-It'll be used to wrap fake and real data passed along the network.
+It'll be used to wrap synthetic and real data passed along the network.
 
 """
+from dataclasses import dataclass
+import math
 
-"""
+
+@dataclass
 class Message:
-    data: pointer to the actual data being passed
-    source: the device that sent the message
-    destination: the device that will receive the message
-    lifetime: how long the message is valid for, in seconds 
-    # Using perplexity its said that for safety critical systems the
-    # lifetime of a message should be:
-    # "maximum permitted time between observing something and using that observation."
-    # d_acc = tolerable_error / max(acceleration)
-    timestamp: when the message was created, in seconds since epoch
-    simulation_creation_time
-    status
+    messageId: int
+    payload: bytearray
+    # source: Device
+    source: str
+    destination: str # for both source and destination, expecting the device ids
+    timestamp: str # Time of creation
+    status: str = "PENDING" # PENDING | DELIVERED | DROPPED | EXPIRED
+    # Pending absorbs state of a message traveling or waiting to be sent
+    lifetime: float = 0
 
-    constructor
-    expire
-    __str__() - To make message history array life easier
+    def set_pending(self) -> None:
+        self.status = "PENDING"
+
+    def set_delivered(self) -> None:
+        self.status = "DELIVERED"
+
+    def set_dropped(self) -> None:
+        self.status = "DROPPED"
+
+    def expire(self) -> None:
+        self.status = "EXPIRED"
+
+    def __str__(self) -> str:
+        deadline = self.lifetime + self.timestamp
+        # Lua has something like this didnt know python could do it
+        pay_size = len(self.payload) if self.payload is not None else 0         
+        return (
+            f"Message ID: {self.messageId} | Source: {self.source} --- Destination: {self.destination} | Status: {self.status}"
+            f"Designated lifetime: {self.lifetime} | Time created (Simulated): {self.timestamp} | Deadline: {deadline}"
+            f"Message payload size: {pay_size}"
+        )
 
 
+@dataclass
 class MessageHistory:
-    buffer of "infinite size" to log all of the messages as a string
-    string format will be a 
-    timestamp - delivery time (all Xs if not delivered maybe) - Message Type - Message if applicable (if applicable because I cant put entire subset of a video here)    
-
-"""
+    # a list of all of the messages ever generated.
+    # Depending on how python handles lists I can see this becoming a big issue over time
+    # Memory management, a linked list kind of structure would be better for this I'd assume.
+    # default as [] since we know at the time MessageHistory is initialized there will be zero
+    # messages
+    log_buffer: list = []
