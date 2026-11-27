@@ -41,9 +41,11 @@ class Message:
         )
 
 
-@dataclass
 class MessageHistory:
     # a list of all of the messages ever generated.
     # Depending on how python handles lists I can see this becoming a big issue over time
     # Memory management, a linked list kind of structure would be better for this I'd assume.
     log_buffer: list
+
+    def __init__(self):
+        self.log_buffer = []
