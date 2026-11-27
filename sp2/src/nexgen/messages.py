@@ -4,7 +4,6 @@ It'll be used to wrap synthetic and real data passed along the network.
 
 """
 from dataclasses import dataclass
-import math
 
 
 @dataclass
